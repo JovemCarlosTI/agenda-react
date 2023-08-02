@@ -1,12 +1,17 @@
-# Projeto base do módulo React 2
+# react-countries
+## Made by Carlos André (@jovemcarlosti)
+[LinkedIn](https://www.linkedin.com/in/jovemcarlos/)
+[Github](https://github.com/JovemCarlosTI)
 
-Este diretório contém a estrutura base para um projeto com:
+![](https://igti-one-click-v2.azurewebsites.net/assets/images/bootcamp/34.svg)
 
-- React 17 (usando typescript)
-- React Router 5
-- Material UI 4
+Este é um projeto prático realizado das aulas gravadas do bootcamp Desenvolvedor React da Faculdade XP Educação
 
-Basta copiar essa pasta e renomeá-la conforme desejado. Adicionalmente, você
-pode renomear a propriedade `name` no arquivo `package.json`, mas isso é opcional.
-
-Em seguida, entre no diretório e instale as depedências com `npm install`, como de costume.
+Deseja iniciar a aplicação? Lembre de usar:
+```
+npm install
+```
+ e 
+```
+npm run start
+```
