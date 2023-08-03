@@ -10,8 +10,9 @@ export const useStyles = makeStyles({
       },
       "& td": {
         verticalAlign: "top",
-        overflowX: "hidden",
-        padding: "8px 4px"
+        overflow: "hidden",
+        padding: "8px 4px",
+        height: "20%"
       }
     },
     dayOfMonth: {
@@ -25,13 +26,13 @@ export const useStyles = makeStyles({
         border: "none",
         cursor: "pointer",
         textAlign: "left",
-        margin: "4px 0",
         whiteSpace: "nowrap",
+        margin: "4px 0",
     },
     eventBackground: {
         display: "inline-block",
         color: "white",
-        padding: "4px",
+        padding: "2px 4px",
         borderRadius: "4px",
     }
   });
