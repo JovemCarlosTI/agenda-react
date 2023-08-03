@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { ICalendar, IEvent, getCalendarsEndpoint, getEventsEndpoint } from "../app/backend";
-import { DAYS_OF_WEEK } from "../utils/dateFunctions";
+import { ICalendar, IEditingEvent, IEvent, getCalendarsEndpoint, getEventsEndpoint } from "../app/backend";
+import { DAYS_OF_WEEK, getToday } from "../utils/dateFunctions";
 
 import Box from "@material-ui/core/Box";
 import Button from '@material-ui/core/Button';
@@ -27,14 +27,18 @@ export function CalendarScreen() {
 
     const weeks = generateCalendar((month + "-01"), events, calendars, selectedCalendars);
 
-    const [open, setOpen] = useState<boolean>(false)
+    const [editingEvent, setEditingEvent] = useState<IEditingEvent | null>(null)
 
     const handleClickOpen = () => {
-        setOpen(true);
+        setEditingEvent({
+            date: getToday(),
+            desc: '',
+            calendarId: calendars[0].id
+        });
       };
     
       const handleClose = () => {
-        setOpen(false);
+        setEditingEvent(null);
       };
 
     // Primeiro e último dia para filtro de busca
@@ -59,6 +63,10 @@ export function CalendarScreen() {
         })
     }, [firstDate, lastDate])
 
+    function refreshEvents() {
+        getEventsEndpoint(firstDate, lastDate).then(setEvents);
+    }
+
     function toggleCalendar(i: number) {
         const newSelectedCalendars = [...selectedCalendars];
         newSelectedCalendars[i] = !newSelectedCalendars[i];
@@ -80,7 +88,10 @@ export function CalendarScreen() {
                 <CalendarHeader month={month} />
                 <Calendar weeks={weeks}/>
 
-                <EventFormDialog open={open} onClose={handleClose}/>
+                <EventFormDialog event={editingEvent} calendars={calendars} onClose={handleClose} onSave={() => {
+                    handleClose();
+                    refreshEvents();
+                }}/>
             </Box>
         </Box>
     );
