@@ -12,10 +12,10 @@ import { useParams } from "react-router";
 // Components
 import { CalendarsView } from "./CalendarsView";
 import { CalendarHeader } from "./CalendarHeader";
+import {EventFormDialog} from "./EventFormDialog";
 
 // Interfaces
 import { Calendar, ICalendarCell, IEventWithCalendar } from "./Calendar";
-
 
 export function CalendarScreen() {
 
@@ -26,6 +26,16 @@ export function CalendarScreen() {
     const [selectedCalendars, setSelectedCalendars] = useState<boolean[]>([]);
 
     const weeks = generateCalendar((month + "-01"), events, calendars, selectedCalendars);
+
+    const [open, setOpen] = useState<boolean>(false)
+
+    const handleClickOpen = () => {
+        setOpen(true);
+      };
+    
+      const handleClose = () => {
+        setOpen(false);
+      };
 
     // Primeiro e último dia para filtro de busca
     const firstDate = weeks[0][0].date;
@@ -59,7 +69,7 @@ export function CalendarScreen() {
         <Box display="flex" height="100%" alignItems="stretch">
             <Box borderRight="1px solid rgb(224, 224, 224)" width="16em" padding="8px 16px">
                 <h2>Agenda React</h2>
-                <Button variant="contained" color="primary">
+                <Button variant="contained" color="primary" onClick={handleClickOpen}>
                     + Novo Evento
                 </Button>
                 <CalendarsView calendars={calendars} toggleCalendar={toggleCalendar} selectedCalendars={selectedCalendars} />
@@ -69,6 +79,8 @@ export function CalendarScreen() {
             <Box flex="1" display="flex" flexDirection="column">
                 <CalendarHeader month={month} />
                 <Calendar weeks={weeks}/>
+
+                <EventFormDialog open={open} onClose={handleClose}/>
             </Box>
         </Box>
     );
