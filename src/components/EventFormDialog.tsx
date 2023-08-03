@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react';
+
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -9,8 +11,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { InputLabel } from '@material-ui/core';
+
 import { ICalendar, IEditingEvent, createEventsEndpoint } from '../app/backend';
-import { useEffect, useState } from 'react';
 
 interface IEventFormDialogProps {
     event: IEditingEvent | null;
@@ -19,18 +21,47 @@ interface IEventFormDialogProps {
     onSave: () => void;
 }
 
+interface IValidationErrors {
+  [field: string]: string;
+}
+
 export function EventFormDialog(props: IEventFormDialogProps) {
     const {calendars, event: currentEvent, onClose, onSave} = props;
 
     const [event, setEvent] = useState<IEditingEvent | null>(currentEvent)
+    const [errors, setErrors] = useState<IValidationErrors>({})
+
+    const inputDate = useRef<HTMLInputElement | null>();
+    const inputDesc = useRef<HTMLInputElement | null>();
 
     useEffect(() => {
       setEvent(currentEvent)
+      setErrors({})
     }, [currentEvent])
+
+  function validateEvent(): boolean {
+    if (!event) return false;
+
+    const currentErrors: IValidationErrors = {};
+    if (!event.desc) {
+      currentErrors["desc"] = "A Descrição deve ser preenchida";
+      inputDesc.current?.focus();
+    }
+    if (!event.date) {
+      currentErrors["date"] = "Data deve ser preenchida";
+      inputDate.current?.focus();
+    }
+    
+    setErrors(currentErrors);
+
+    return Object.keys(currentErrors).length === 0;
+  }
 
   function save(e: React.FormEvent) {
     e.preventDefault();
-    createEventsEndpoint(event!).then(onSave)
+    if (event && validateEvent()) {
+      createEventsEndpoint(event).then(onSave)
+    }
   }
 
   return (
@@ -42,9 +73,9 @@ export function EventFormDialog(props: IEventFormDialogProps) {
               Preencha as informações abaixo para criar o seu evento
             </DialogContentText>
             {event && <>
-              <TextField autoFocus type='date' margin="normal" label="Date" fullWidth value={event.date} onChange={(e) => setEvent({...event, date: e.target.value})}/>
+              <TextField autoFocus inputRef={inputDate} type='date' error={!!errors.date} helperText={errors.date} margin="normal" label="Date" fullWidth value={event.date} onChange={(e) => setEvent({...event, date: e.target.value})}/>
               <TextField type="time" margin="normal" label="Hora (opcional)" fullWidth value={event.time ?? ""} onChange={(e) => setEvent({...event, time: e.target.value})}/>
-              <TextField margin="normal" label="Descrição" fullWidth value={event.desc} onChange={(e) => setEvent({...event, desc: e.target.value})}/>
+              <TextField margin="normal" inputRef={inputDesc} label="Descrição" error={!!errors.desc} helperText={errors.desc} fullWidth value={event.desc} onChange={(e) => setEvent({...event, desc: e.target.value})}/>
               <FormControl margin='normal' fullWidth>
                 <InputLabel id="select-calendar">Agenda</InputLabel>
                 <Select
